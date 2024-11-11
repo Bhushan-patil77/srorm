@@ -2,6 +2,8 @@ import React from 'react'
 import { useNavigate } from 'react-router-dom'
 
 function Register() {
+  const backendUrl = import.meta.env.VITE_backend_URL;
+
 
     const navigate = useNavigate()
 
@@ -19,7 +21,7 @@ function Register() {
         user.socketId=''
         user.status='offline'
 
-             fetch('http://localhost:5000/registerUser', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(user) })
+             fetch(`${backendUrl}/registerUser`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(user) })
             .then((response) => { return response.json() })
             .then((data) => {
                 console.log(data);

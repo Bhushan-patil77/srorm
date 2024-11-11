@@ -2,6 +2,8 @@ import React from 'react'
 import { useNavigate } from 'react-router-dom'
 
 function Login() {
+  const backendUrl = import.meta.env.VITE_backend_URL;
+
 
     const navigate = useNavigate()
 
@@ -18,7 +20,7 @@ function Login() {
 
        console.log(user);
 
-       fetch('http://localhost:5000/loginUser', {method:'post', headers:{'Content-Type': 'application/json'}, body:JSON.stringify(user)})
+       fetch(`${backendUrl}/loginUser`, {method:'post', headers:{'Content-Type': 'application/json'}, body:JSON.stringify(user)})
        .then((response)=>{return response.json()})
        .then((data)=>{
         if(data.message=='User authenticated...')

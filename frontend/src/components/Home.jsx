@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import { io } from 'socket.io-client';
 import ting from '../assets/pop.mp3'
-const socket = io('http://localhost:5000');
-// https://lets-chat-backend-od7s.onrender.com
+const socket = io('https://srorm-3.onrender.com');
 
-// IMPORTANT MSG :- NEED TO STRUCTURE THE SENDING MSG AND RCVING MSG OBJECT PROPERLY. (USING STANDERED METHOD FOR BOTH TO MAINTAIN THE STRUCTURE )
 
 function Home() {
+  const backendUrl = import.meta.env.VITE_backend_URL;
   const loggedInUser = JSON.parse(localStorage.getItem('user'))
   const clickedUser = localStorage.getItem('clickedUser')
   const [recentChats, setRecentChats] = useState([])
@@ -30,7 +29,7 @@ const [clickedRecentChat, setClickedRecentChat]=useState({})
   const audio = new Audio(ting)
 
 useEffect(()=>{
-  console.log(globalMsgObject)
+  console.log(backendUrl)
 },[globalMsgObject])
 
   useEffect(() => {  //updating socket id in db when page refresh or connected
@@ -278,7 +277,7 @@ useEffect(()=>{
       }
 
 
-      fetch('http://localhost:5000/updateRecentChats', { method: 'post', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ _id: loggedInUser._id, chat: msgObj.sender, senderId: msgObj.sender._id, content:msgObj.content, flag:flag }) })
+      fetch(`${backendUrl}/updateRecentChats`, { method: 'post', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ _id: loggedInUser._id, chat: msgObj.sender, senderId: msgObj.sender._id, content:msgObj.content, flag:flag }) })
         .then((response) => { return response.json() })
         .then((data) => { console.log(data) })
         .catch((err) => { alert(err) })
@@ -345,7 +344,7 @@ useEffect(()=>{
         status: recipient.status
       }
 
-      fetch('http://localhost:5000/updateRecentChats', { method: 'post', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ _id: loggedInUser._id, chat: chat }) })
+      fetch(`${backendUrl}/updateRecentChats`, { method: 'post', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ _id: loggedInUser._id, chat: chat }) })
         .then((response) => { return response.json() })
         .then((data) => {
           console.log(data)
@@ -360,7 +359,7 @@ useEffect(()=>{
   };
 
   const getRecipient = (userId) => {
-    fetch('http://localhost:5000/getRecipient', { method: 'post', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ userId: userId }) })
+    fetch(`${backendUrl}/getRecipient`, { method: 'post', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ userId: userId }) })
       .then((response) => { return response.json() })
       .then((data) => {
         setRecipient(data.user)
@@ -369,26 +368,26 @@ useEffect(()=>{
   }
 
   const getRecentChats = (_id) => {
-    fetch('http://localhost:5000/getRecentChats', { method: 'post', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ _id: _id }) })
+    fetch(`${backendUrl}/getRecentChats`, { method: 'post', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ _id: _id }) })
       .then((response) => { return response.json() })
       .then((data) => { setRecentChats(data.recentChats) })
   }
 
   const getHistory = (_id) => {
-    fetch('http://localhost:5000/getHistory', { method: 'post', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ _id: _id }) })
+    fetch(`${backendUrl}/getHistory`, { method: 'post', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ _id: _id }) })
       .then((response) => { return response.json() })
       .then((data) => { setGlobalMsgObject(data.data); setUnreadMsgObj(data.loggedInUserInfo.unreadMessages !=undefined ? data.loggedInUserInfo.unreadMessages : {} ) })
   }
 
   const getPreviousMessages = () => {
-    fetch('http://localhost:5000/getPreviousMessages', { method: 'post', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ senderId: loggedInUser._id, receiverId: recipient._id }) })
+    fetch(`${backendUrl}/getPreviousMessages`, { method: 'post', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ senderId: loggedInUser._id, receiverId: recipient._id }) })
       .then((response) => { return response.json() })
       .then((data) => { setPreviousMessages(data.previousMessages) })
   }
 
   const searchUser = (inputName) => {
     if (inputName != '') {
-      fetch('http://localhost:5000/searchUser', { method: 'post', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username: inputName }) })
+      fetch(`${backendUrl}/searchUser`, { method: 'post', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username: inputName }) })
         .then((response) => { return response.json() })
         .then((data) => {
           if (data.message == 'all users') {
@@ -411,7 +410,7 @@ useEffect(()=>{
   }
 
   const clearUnreadMsgsForRecipient = (loggedInUserId, recipientId)=>{
-    fetch('http://localhost:5000/clearUnreadMsgsForRecipient', { method: 'post', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ _id: loggedInUserId, recipientId:recipientId }) })
+    fetch(`${backendUrl}/clearUnreadMsgsForRecipient`, { method: 'post', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ _id: loggedInUserId, recipientId:recipientId }) })
 
         .then((response) => { return response.json() })
         .then((data) => { console.log(data)})
@@ -436,7 +435,7 @@ useEffect(()=>{
   }, [clickedUserInfo])
 
   const clearDB = () => {
-    fetch('http://localhost:5000/clearDB', { method: 'post', headers: { 'Content-Type': 'application/json' } })
+    fetch(`${backendUrl}/clearDB`, { method: 'post', headers: { 'Content-Type': 'application/json' } })
       .then((response) => { return response.json() })
       .then((data) => {
         console.log(data)
